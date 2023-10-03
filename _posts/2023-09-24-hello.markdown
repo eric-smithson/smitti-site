@@ -1,7 +1,13 @@
 ---
 layout: post
 title:  "Hello"
-date:   2023-09-24 19:07:15 -0700
+date:   2023-09-24 19:07:15 -0000
 categories: blog
 ---
-Hello this is my website. Thanks for coming.
+Hello this is my website. Thanks for coming. 
+
+[img](/smitti-site/assets/portal_gun_mount.png)
+![img](/smitti-site/assets/portal_gun_mount.png)
+
+[img](/assets/portal_gun_mount.png)
+![img](/assets/portal_gun_mount.png)
