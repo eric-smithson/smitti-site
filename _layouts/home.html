@@ -8,6 +8,13 @@ layout: default
   {%-endif-%}
 </header>
 
+<h2>Blog</h2>
+
 {%-include menu_item.html collection=site.data.menu.entries-%}
 
 {{ content }}
+
+<h2>About</h2>
+
+{% capture about_content %}{% include about.markdown %}{% endcapture %}
+{{ about_content | markdownify }}
