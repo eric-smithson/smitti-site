@@ -6,8 +6,5 @@ categories: blog
 ---
 Hello this is my website. Thanks for coming. 
 
-[img](/smitti-site/assets/portal_gun_mount.png)
-![img](/smitti-site/assets/portal_gun_mount.png)
-
-[img](/assets/portal_gun_mount.png)
-![img](/assets/portal_gun_mount.png)
+[img]({{ site.baseurl }}/assets/portal_gun_mount.png)
+![img]({{ site.baseurl }}/assets/portal_gun_mount.png)
