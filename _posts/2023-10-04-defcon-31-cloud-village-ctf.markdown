@@ -5,40 +5,40 @@ date:   2023-10-04 00:00:00 -0000
 categories: blog
 ---
 
-At DEFCON 31, two UCF alumni got together and overengineered the crap out of some CTF challenges. We started a day late but within 3 hours of starting we rocketed up to 11th place out of over 200 teams (and collectively won $200 playing blackjack afterwards).
+At DEFCON 31, two UCF alumni got together and overengineered the crap out of some [Cloud Village](https://cloud-village.org/) CTF challenges. We started a day late but within 3 hours of starting we rocketed up to 11th place out of over 200 teams (and collectively won $200 playing blackjack afterwards).
 
 We’ll go over what tools we used, and dig into the key challenges that helped us secure our place on the leaderboard.
 
 
-![alt_text]({{ site.baseurl }}/assets/defcon-31-images/image1.png "image_tooltip")
+![]({{ site.baseurl }}/assets/defcon-31-images/image1.png "scoreboard showing us in 11th place")
 
 BlackJack Strategy GPT: [https://chat.openai.com/share/573684b4-9ddb-4ade-8d4b-b57b4acda012](https://chat.openai.com/share/573684b4-9ddb-4ade-8d4b-b57b4acda012) 
 
-![alt_text]({{site.baseurl }}/assets/defcon-31-images/image2.png "image_tooltip")
+![]({{site.baseurl }}/assets/defcon-31-images/image2.png "$132 won by Charlton")
 
 
 Charlton’s Winnings
 
 
-## The Tools
-### ChatGPT
+# The Tools
+## ChatGPT
 
 Our friendly robotic “third teammate” needs no introduction, but we were able to see just how powerful this tool was for quickly prototyping scripts to hit endpoints and just generally saved us hours of writing tedious code.
 
 
-### Burp Suite
+## Burp Suite
 
-Burp Suite is an awesome swiss army knife for assessing, attacking, and automating interactions with web applications and APIs. This was essential for intercepting the HTTP requests being sent to the web servers they gave us access to.
-
-
-## The Challenges
+[Burp Suite](https://portswigger.net/burp) is an awesome swiss army knife for assessing, attacking, and automating interactions with web applications and APIs. This was essential for intercepting the HTTP requests being sent to the web servers they gave us access to.
 
 
-![alt_text]({{site.baseurl }}/assets/defcon-31-images/image3.png "image_tooltip")
+# The Challenges
+
+
+![]({{site.baseurl }}/assets/defcon-31-images/image3.png "screenshot of the challenges we submitted")
 
 
 
-### Gnome University
+## Gnome University
 
 
 > _In the thrilling realm of Gnomeland, the "Gnomes Research Paper" website housed precious research papers, and whispers spoke of a hidden flag concealed within the cloud. Led by the wise Gorman, a brave group of gnomes embarked on a quest to unveil its secrets._ <br><br>
@@ -53,7 +53,7 @@ Burp Suite is an awesome swiss army knife for assessing, attacking, and automati
 > _http://cloudfilestore.s3-website-eu-west-1.amazonaws.com/_
 
 
-#### Burping the ~~Baby~~ Gnome
+### Burping the ~~Baby~~ Gnome
 
 This is the very first challenge we solved 
 
@@ -116,17 +116,17 @@ https://3k93nsmmy5.execute-api.eu-west-1.amazonaws.com/cloudevl/download?file_na
 From there, we were able to download the secret.txt file and solve the challenge.
 
 
-#### Best Practices
+### Best Practices
 
 By the way, in software development, the technical term for exposing the actual bucket the backend contacts in the request is called **BAD**. Any time you’re implementing a service that gates access to privileged resources, it’s important to follow two authorization-related dogmas: [Deny by default](https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html#deny-by-default) and thoroughly [validating permissions on each request](https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html#validate-the-permissions-on-every-request). If the Lambda were properly matching file and bucket names against an allowed list and factoring the permissions of the requestor (i.e., us) into its decisions to grant access to resources in S3, our simple trick of swapping buckets and filenames wouldn’t have worked.
 
 
-### Digital Forest
+## Digital Forest
 
 This was the second challenge we focused on. We ended up solving it so hard we ended up with the source code for another two challenges– more on that later!
 
 
-#### Challenge Description
+### Challenge Description
 
 
 >    _Once upon a time, in a realm known as the Digital Forest, a community of highly skilled cyber gnomes lived in harmony with the ever-evolving technology that surrounded them. These gnomes were renowned for their extraordinary knack for navigating the intricate world of cloud security._ <br><br>
@@ -143,7 +143,7 @@ This was the second challenge we focused on. We ended up solving it so hard we e
 >    _[https://leaky-bucket-jobztbckag-uc.a.run.app](https://leaky-bucket-jobztbckag-uc.a.run.app)_
 
 
-#### Getting Meta(data) with SSRF
+### Getting Meta(data) with SSRF
 
 Opening up [https://leaky-bucket-jobztbckag-uc.a.run.app](https://leaky-bucket-jobztbckag-uc.a.run.app) presented us with a simple “status page”.
 
@@ -151,7 +151,7 @@ Opening up [https://leaky-bucket-jobztbckag-uc.a.run.app](https://leaky-bucket-j
 
 
 
-![alt_text]({{site.baseurl }}/assets/defcon-31-images/image4.png "image_tooltip")
+![]({{site.baseurl }}/assets/defcon-31-images/image4.png "a simple status page showing fields for a url and header")
 
 
 We were presented with a [Cloud Run](https://cloud.google.com/run/) app accepting a URL and JSON dictionary of HTTP headers. Upon submitting the form, the app’s backend issues an HTTP request to the specified URL with the included parameters. 
@@ -169,7 +169,7 @@ First of all, we knew we’d need basic information such as the Google Cloud pro
 
 
 
-![alt_text]({{site.baseurl }}/assets/defcon-31-images/image5.png "image_tooltip")
+![]({{site.baseurl }}/assets/defcon-31-images/image5.png "ChatGPT session showing how we asked it for the GCP metadata endpoint")
 
 
 We plugged that URL into the app along with the appropriate HTTP headers, and out came the project ID!
@@ -177,12 +177,12 @@ We plugged that URL into the app along with the appropriate HTTP headers, and ou
 
 Input:
 
-![alt_text]({{site.baseurl }}/assets/defcon-31-images/image6.png "image_tooltip")
+![]({{site.baseurl }}/assets/defcon-31-images/image6.png "Screenshot of us putting the metadata service and appropriate tags in the status website")
 
 
 Output:
 
-![alt_text]({{site.baseurl }}/assets/defcon-31-images/image7.png "image_tooltip")
+![]({{site.baseurl }}/assets/defcon-31-images/image7.png "Results of hitting the metadata server, the project id we were looking for!")
 
 
 This was great confirmation of our theory of the challenge, and an encouraging step towards the solution. We now have concrete proof that we’re able to interact with the GCP metadata service! But did that mean we could mint working [service account](https://cloud.google.com/iam/docs/service-account-overview) tokens?
@@ -198,20 +198,20 @@ So long as host-level firewalls and validations aren’t in place, effectively a
 
 Input:
 
-![alt_text]({{site.baseurl }}/assets/defcon-31-images/image8.png "image_tooltip")
+![]({{site.baseurl }}/assets/defcon-31-images/image8.png "Us using the status page to hit the endpoint to get a service account token")
 
 
 
 
 Output:
 
-![alt_text]({{site.baseurl }}/assets/defcon-31-images/image9.png "image_tooltip")
+![]({{site.baseurl }}/assets/defcon-31-images/image9.png "The service account token")
 
 
 We can use this service account bearer token for direct API access to Google Cloud services. Scrumptious 😎
 
 
-#### New Dev Flow Just Dropped: Copying and Pasting Code from ~~Stack Overflow~~ ChatGPT
+### New Dev Flow Just Dropped: Copying and Pasting Code from ~~Stack Overflow~~ ChatGPT
 
 Now that we had a reliable method to issue and retrieve bearer tokens from the CTF environment, we wanted to use our cool new tokens to query details about the project.
 
@@ -225,8 +225,7 @@ Better to do that in something more robust than cURL, though. Perhaps ChatGPT co
 
     Certainly! Below is a Python script that uses the provided bearer token to list buckets associated with a given project using Google Cloud Storage's JSON API:
 
-
-```
+    ```
     import requests
 
     def list_buckets(project_id, access_token):
@@ -259,9 +258,7 @@ Better to do that in something more robust than cURL, though. Perhaps ChatGPT co
             	print(bucket)
     	else:
         	print("No buckets found or there was an error.")
-```
-
-
+    ```
 
     Replace your_project_id with the desired project ID and update the ACCESS_TOKEN placeholder with your token. Run the script, and it will print out the list of buckets associated with the given project.
 
@@ -274,8 +271,7 @@ Here are my instructions for ChatGPT. Notice that I included plenty of context a
 
     **Manually retrieving the access token is really annoying. I have to refresh it by hand. I'm able to send the following HTTP request: **
 
-
-```
+    ```
     POST /result HTTP/2 
     Host: leaky-bucket-jobztbckaq-uc.a.run.app 
     Origin: https://leaky-bucket-jobztbckaq-uc.a.run.app 
@@ -284,14 +280,11 @@ Here are my instructions for ChatGPT. Notice that I included plenty of context a
     …trimmed…
 
     inputUrl=http%3A%2F%2Fmetadata.google.internal%2FcomputeMetadata%2Fv1%2Finstance%2Fservice-accounts%2Fdefault%2Ftoken&inputHeader=%7B%22Metadata-Flavor%22%3A+%22Google%22%7D 
-```
-
-
+    ```
 
     **It returns a response like so containing the metadata service's JSON response:** 
 
-
-```
+    ```
     HTTP/2 200 OK 
     Content-Type: text/html; charset=utf-8 
     X-Cloud-Trace-Context: 2281a5808684856eba786a8bda65afb4;o=1 
@@ -301,9 +294,7 @@ Here are my instructions for ChatGPT. Notice that I included plenty of context a
     Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000 
 
     <!doctype html> <html> <head> <title>Home </title> <link rel="stylesheet" href="https://getbootstrap.com/docs/4.0/dist/css/bootstrap.min.css"> <link rel="stylesheet" href="https://getbootstrap.com/docs/4.0/examples/starter-template/starter-template.css"> </head> <body> <div class="container"> <h1></h1> <hr> <h1>Results</h1> <table id="data" class="table table-striped"> <thead> <tr> <th>Output</th> </tr> </thead> <tbody> <td> {&#34;access_token&#34;:&#34;ya29.c.b0Aaekm1J17f4M_XxtAUfKERPi64R_…trimmed…,&#34;expires_in&#34;:791,&#34;token_type&#34;:&#34;Bearer&#34;} </th> </table> <p></p> </div> <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script> </body> </html> 
-```
-
-
+    ```
 
     **Amend the python script from earlier to issue this request to retrieve a fresh access token with each execution. Parse the required information from the server's response using beautiful soup, and provide the token as an argument to the list_buckets function**
 
@@ -347,7 +338,7 @@ def get_access_token():
 Now, we can simply call get_access_token() any time our script needs a new one so we can keep drilling a hole in these buckets. 
 
 
-#### Going Above and Beyond: Downloading ALL the Buckets
+### Going Above and Beyond: Downloading ALL the Buckets
 
 With a little more back-and-forth, we eventually wrote a complete script (GitHub Link: [https://github.com/chtzvt/dc31-cloud-ctf/blob/master/get_metadata.py](https://github.com/chtzvt/dc31-cloud-ctf/blob/master/get_metadata.py#L9C31-L9C31)) to accomplish the following: 
 
@@ -365,7 +356,7 @@ This dumped far more files than we expected from a number of buckets in the envi
 
 
 
-![alt_text]({{site.baseurl }}/assets/defcon-31-images/image10.png "image_tooltip")
+![]({{site.baseurl }}/assets/defcon-31-images/image10.png "A ton of GCP buckets we got dumped on our machine")
 
 
 It turned out these files (which we weren’t expecting to retrieve) contained the source code of supporting infrastructure for other challenges, complete with flags. Oops!
@@ -375,12 +366,11 @@ Along with three more files: lore01, lore02, and lore03. Inspecting these reveal
 Contents of **lore01**:
 
 
-    _In the depths of the digital forest, a tribe of cyber gnomes thrived. Legend has it that they were born from lines of code, emerging as guardians of the virtual realm…_
+> _In the depths of the digital forest, a tribe of cyber gnomes thrived. Legend has it that they were born from lines of code, emerging as guardians of the virtual realm..._
 
 Contents of **lore03**: 
 
-
-    _FLAG-{gm2n0ydjp9fi1vqgcibzfga5an7cwjeg}_
+    FLAG-{gm2n0ydjp9fi1vqgcibzfga5an7cwjeg}
 
 And there’s our flag!
 
@@ -394,7 +384,7 @@ Tools/Artifacts:
     * [https://github.com/chtzvt/dc31-cloud-ctf/blob/master/get_metadata.py](https://github.com/chtzvt/dc31-cloud-ctf/blob/master/get_metadata.py) 
 
 
-### Gnomes in the Pod
+## Gnomes in the Pod
 
 
 > _A group of talented developers was once tirelessly working on delivering their brand-new cutting-edge Terminal Application (clonsole.apk) in a busy Google Cloud Platform (GCP) environment._ <br><br>
@@ -404,7 +394,7 @@ Tools/Artifacts:
 > _35.193.149.235_ <br><br>
 
 
-#### Use the Source, Luke
+### Use the Source, Luke
 
 This challenge ostensibly would have required some Android reverse engineering to solve. However, our luck in exfiltrating a treasure trove of data from the CTF environment allowed us to skip this entirely. 
 
@@ -441,7 +431,7 @@ When the path '/G3TD@T@N0W0RL@73R' is requested, this application dumps all of i
 
 
 
-![alt_text]({{site.baseurl }}/assets/defcon-31-images/image11.png "image_tooltip")
+![]({{site.baseurl }}/assets/defcon-31-images/image11.png "Environment variable dump")
 
 
 Of particular interest is the following entry: 
@@ -459,7 +449,7 @@ Of course we had no need to do this, since we already had the source code (and f
 
 
 
-![alt_text]({{site.baseurl }}/assets/defcon-31-images/image12.png "image_tooltip")
+![]({{site.baseurl }}/assets/defcon-31-images/image12.png "ascii art gnome and the flag")
 
 
 Tools/Artifacts: 
@@ -476,7 +466,7 @@ Tools/Artifacts:
     * [https://github.com/chtzvt/dc31-cloud-ctf/blob/master/exfil_artifacts/1691029019.85471-83b6afc8907f477ba2b22de027fce442/Flask-CTF-Cloud/app.py](https://github.com/chtzvt/dc31-cloud-ctf/blob/master/exfil_artifacts/1691029019.85471-83b6afc8907f477ba2b22de027fce442/Flask-CTF-Cloud/app.py) 
 
 
-### Gnome Sweet Gnome
+## Gnome Sweet Gnome
 
 Our Digital Forest data dump continued to pay dividends for the remaining GCP-oriented challenges. We discovered the source code of another Google Cloud Function in our data dump that appeared to return an IP address and credentials upon receipt of a POST request with the payload `{'type': 'db'}`.
 
@@ -537,7 +527,7 @@ select * from list;
 The flag was the first and only entry in the ‘list’ table. We were done!
 
 
-### Gotta Go Gnome
+## Gotta Go Gnome
 
 
 > _In the virtual kingdom where cyber gnomes thrive, a renowned CTF challenge on privilege escalation enticed hackers in GCP. The mystical sorcerer guarded the secrets fiercely._ <br><br>
@@ -553,7 +543,7 @@ The flag was the first and only entry in the ‘list’ table. We were done!
 We spent the rest of the competition attempting this problem and only failed because we overthought the problem description!
 
 
-#### The **Basics** of Service Account Impersonation
+### The **Basics** of Service Account Impersonation
 
 Upon accessing the url provided in the description we see a website with a button “Get Access Token”. Very straightforward, nothing interesting happening with HTTP requests when we used Burp, so we moved forward with analying the access code.
 
@@ -609,7 +599,7 @@ At this point we’ll give a shout out to another article which covered this pro
 We were so close!
 
 
-### Artifacts
+## Artifacts
 
 ChatGPT Session where we came up with the script we used:
 
@@ -618,3 +608,15 @@ ChatGPT Session where we came up with the script we used:
 Our work-in-progress attempt to write a script that would issue a delegated service account access token:
 
 * [https://github.com/chtzvt/dc31-cloud-ctf/blob/master/create_sa_pk.py](https://github.com/chtzvt/dc31-cloud-ctf/blob/master/create_sa_pk.py)
+
+
+# Conclusion and Final Thoughts (from Eric)
+
+Okay so when Charlton and I were working on this we forgot to write a conclusion together, so that means I can say whatever I want here! 
+But really all I want to say is thank you to Charlton for basically carrying the entire team on his back. 
+To give context, I have no experience in security and he has competed in [NCCDC](https://en.wikipedia.org/wiki/National_Collegiate_Cyber_Defense_Competition) finals before.  This was my second DEFCON and frankly I learned more about security talking to Charlton than I did attending the talks, and wow did I learn a lot about security. 
+
+I had a great time at DEFCON and would encourage anyone to show up! 
+Security people, in my experience, are some of the nicest, most helpful[,](https://en.wikipedia.org/wiki/Serial_comma) and giving people I've met working in tech.
+
+You can find Charlton's website here: [https://blog.ctis.me/](https://blog.ctis.me/)
